@@ -1,17 +1,18 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:13
-    container_name: reddit_clone_db
+  mysql:
+    image: mysql:8.0
+    container_name: reddit_clone_mysql_db
     environment:
-      POSTGRES_USER: redditcloneuser
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: redditclonedb
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: redditclonedb
+      MYSQL_USER: redditcloneuser
+      MYSQL_PASSWORD: password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "3306:3306"
 
   spring-reddit-backend:
     build:
@@ -19,13 +20,13 @@ services:
       dockerfile: Dockerfile
     container_name: reddit_clone_app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/redditclonedb
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/redditclonedb
       SPRING_DATASOURCE_USERNAME: redditcloneuser
       SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - mysql
 
 volumes:
-  postgres_data:
+  mysql_data:
